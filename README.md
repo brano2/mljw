@@ -15,3 +15,11 @@
 ## How to run
 
 To run the flask app, either hit the play button in PyCharm, or execute `flask run` in terminal (after `conda activate htb2020`)
+
+## Chrome Extension Development
+
+* Install [node](https://nodejs.org/en/). Any version from 8+
+* Go to the `ext` directory and run `npm install`. This will install all the necessary dependencies.
+* To start developing the extension run `npm run dev`. This will create a `dist` folder.
+* To load the extension (`dist` folder) follow the guide on [how to load unpacked extension](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/)
+* To build the extesion run `npm run build`. This will create a zip file ready to be used as an extension.
