@@ -1,16 +1,28 @@
 import argparse
 import os
+import pandas as pd
+import json
 
 from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
 from google.oauth2 import service_account
 
-# def print_results(annotations):
+def print_results(annotations):
+  content = []
+  sentiment = []
+  magnitude = []
 
+  for entity in annotations.entities:
 
+    content.append(entity.name)
+    sentiment.append(entity.sentiment.score)
+    magnitude.append(entity.sentiment.magnitude)
 
-#   print(annotations)
+  df = pd.DataFrame({"content": content, "sentiment": sentiment, "magnitude": magnitude})
+  df = df.sort_values(['magnitude'], ascending=False)
+
+  return df.to_json
 
 def analyze(movie_review_filename):
     """Run a sentiment analysis request on text within a passed filename."""
