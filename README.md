@@ -23,3 +23,5 @@ To run the flask app, either hit the play button in PyCharm, or execute `flask r
 * To start developing the extension run `npm run dev`. This will create a `dist` folder.
 * To load the extension (`dist` folder) follow the guide on [how to load unpacked extension](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/)
 * To build the extesion run `npm run build`. This will create a zip file ready to be used as an extension.
+* Files to edit: `ext/src/contentScripts/index.js` - this file is automatically injected to the site.
+* Files to edit: `ext/src/App.vue` - this is the visual of the extension.
