@@ -1,0 +1,17 @@
+name: htb2020
+dependencies:
+  - conda-build
+  - jupyterlab
+  - matplotlib
+  - nodejs  # for jupyter extensions and things
+  - numpy
+  - pandas
+  - pip
+  - pytest
+  - python=3.7
+  - seaborn
+  - tqdm
+  - pip:
+    - google-cloud-language
+    - Flask
+
