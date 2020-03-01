@@ -99,7 +99,6 @@ def analyze_text(request):
         
         # print(len(recommendations_prep))
         # for each similar articles get result from Google NLP API and recommend article (use get_annotations on similar_articles[N].content)
-
-        return jsonify(recommendation)
+        return jsonify([recommendation])
     else:
         return 'error'

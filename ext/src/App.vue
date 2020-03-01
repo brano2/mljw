@@ -99,10 +99,10 @@ export default {
 
                 // console.log(this.results)
 
-                data.forEach(element => {
+                // data.forEach(element => {
                     
-                    this.results.push(element)
-                });
+                //     this.results.push(element)
+                // });
             })
 
             
