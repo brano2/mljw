@@ -1,14 +1,20 @@
 <template>
 <div id="htb-reco" :class="{ 'htb-open': open }">
-    <div class="htb-button-open" @click="open = !open">
+    <div class="htb-button-open" @click="openModal()">
         <div class="inner">
-            <i class="el-icon-d-arrow-left" v-show="!open"></i>
-            <i class="el-icon-close" v-show="open"></i>
+            <i class="el-icon-d-arrow-left" v-if="!loading" v-show="!open"></i>
+            <i class="el-icon-close" v-if="!loading" v-show="open"></i>
+            <i class="el-icon-loading" v-if="loading"></i>
         </div>
     </div>
     <div class="htb-body-wrapper">
-        <div class="htb-article" v-for="item in results" :key="item.uuid">
-            <p><a :href="item.url" target="_blank">{{ item.title }}</a></p>
+        <div class="htb-body-inner-wrapper">
+            <div class="htb-article" v-for="item in results" :key="item.uuid">
+                <a :href="item.url" target="_blank">
+                    <img :src="item.thread.main_image">
+                    <p>{{ item.title }}</p>
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -19,7 +25,8 @@ export default {
     data() {
         return {
             results: [],
-            open: false
+            open: false,
+            loading: false
         }
     },
     methods: {
@@ -28,6 +35,10 @@ export default {
             style.type= "text/css";
             style.appendChild(document.createTextNode(css)); /* BUG: Does not work in IE8 or less */
             const inserted = document.body.appendChild(style);
+        },
+        openModal() {
+            if (this.loading) return
+            this.open = !this.open
         }
     },
     mounted() {
@@ -72,13 +83,36 @@ export default {
 
         #htb-reco .htb-body-wrapper {
             width: 350px;
-            background: white;
+            padding: 5px;
+        }
+
+         #htb-reco .htb-body-wrapper .htb-body-inner-wrapper {
+            width: 340px;
+            border-radius: 5px;
+            background: #fff;
+            border: 1px solid #f2f2f2;
+            box-shadow: 0 1px 2px black;
+            padding: 10px;
+        }
+
+        #htb-reco .htb-body-wrapper .htb-body-inner-wrapper img {
+            border-radius: 5px;
+        }
+
+        #htb-reco .htb-body-wrapper .htb-body-inner-wrapper p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #htb-reco .htb-body-wrapper .htb-body-inner-wrapper a {
+            text-decoration: none;
         }
         `;
 
         this.addStyle(style)
         // console.log(this.$textData)
-        axios.post('http://127.0.0.1:5000/analyze_text', { text: this.$textData })
+        this.loading = true;
+        axios.post('https://us-central1-htb-2020-269718.cloudfunctions.net/function-1 ', { text: this.$textData })
             .then(({ data }) => {
                 // const parsed = JSON.parse(data)
                 console.log('data', data)
@@ -99,10 +133,11 @@ export default {
 
                 // console.log(this.results)
 
-                // data.forEach(element => {
-                    
-                //     this.results.push(element)
-                // });
+                data.forEach(element => {
+                    this.results.push(element)
+                });
+                this.loading = false
+                this.open = true
             })
 
             
