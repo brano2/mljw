@@ -4,7 +4,8 @@ from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
 
-def print_results(annotations):
+
+def process_annotations(annotations):
     content = []
     sentiment = []
     magnitude = []
@@ -19,8 +20,9 @@ def print_results(annotations):
 
     return df.to_json()
 
-def analyze(text):
-    """Run a sentiment analysis request on text within a passed filename."""
+
+def get_annotations(text):
+    """Run a sentiment analysis request on text."""
     client = language.LanguageServiceClient()
 
     document = types.Document(
@@ -28,14 +30,14 @@ def analyze(text):
         type=enums.Document.Type.PLAIN_TEXT)
     annotations = client.analyze_entity_sentiment(document=document)
 
-    # Print the results
-    text = print_results(annotations)
-    return text
-    
-def hello_world(request):
+    return annotations
+
+
+def analyze_text(request):
     request_json = request.get_json()
     if request_json and 'text' in request_json:
-        res = analyze(request_json['text'])
-        return jsonify(res)
+        annotations = get_annotations(request_json['text'])
+        result = process_annotations(annotations)
+        return jsonify(result)
     else:
         return 'error'
