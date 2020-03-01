@@ -4,11 +4,14 @@ from flask import jsonify
 from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
-from newsapi import NewsApiClient
 import numpy as np
 import pandas as pd
 import webhoseio
-webhoseio.config(token="7399617f-00ac-48ec-9e6a-deb0d8912c65")
+
+WEBHOSE_TOK = os.getenv('WEBHOSEIO_TOKEN')
+if WEBHOSE_TOK is None:
+    print('ERROR: WEBHOSEIO_TOKEN environment variable not set!')
+webhoseio.config(token=WEBHOSE_TOK)
 
 
 def process_annotations(annotations):
@@ -32,7 +35,6 @@ def _build_query(phrases):
     return ' '.join([f'"{phrase}"' if ' ' in phrase else phrase for phrase in phrases])
 
 def find_related_articles(df):
-    newsapi = NewsApiClient(api_key=os.getenv('NEWSAPI_KEY'))
     n_keywords = 5
     articles = []
     while len(articles) < 10:
