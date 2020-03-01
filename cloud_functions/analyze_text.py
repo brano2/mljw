@@ -57,21 +57,22 @@ def find_related_articles(df):
 def select_article(similar_articles, original_art_stats):
     keywords = original_art_stats.content[:5]
     orig_sentiments = original_art_stats.sentiment[:5]
-    recommendations_prep = []
     corr_coefs = []
+    art_stats = []
     for art in similar_articles:
         text = art.get('text')
         df = process_annotations(get_annotations(text))
         sentiments = []
         for kw in keywords:
             sentiment = df.loc[df.content == kw].sentiment.values
-            if sentiment:
+            if sentiment.size > 0:
                 sentiments.append(sentiment[0])  # There will be at most one sentiment
             else:
                 sentiments.append(0)
         corr_coefs.append(np.corrcoef(orig_sentiments, sentiments)[0, 1])
+        art_stats.append((df, sentiments, corr_coefs[-1]))
     i = np.argmin(corr_coefs)
-    return similar_articles[i]
+    return similar_articles[i], art_stats
 
 
 def get_annotations(text):
@@ -93,12 +94,12 @@ def analyze_text(request):
         annotations = get_annotations(request_json['text'])
         result = process_annotations(annotations)
         similar_articles = find_related_articles(result)
-        recommendation = select_article(similar_articles, result)
+        recommendation, art_stats = select_article(similar_articles, result)
 
         
         # print(len(recommendations_prep))
         # for each similar articles get result from Google NLP API and recommend article (use get_annotations on similar_articles[N].content)
 
-        return jsonify(result.to_json())
+        return jsonify(recommendation)
     else:
         return 'error'
