@@ -5,6 +5,7 @@ from google.cloud import language
 from google.cloud.language import enums
 from google.cloud.language import types
 from newsapi import NewsApiClient
+import numpy as np
 import pandas as pd
 import webhoseio
 webhoseio.config(token="7399617f-00ac-48ec-9e6a-deb0d8912c65")
@@ -53,6 +54,26 @@ def find_related_articles(df):
     return articles
 
 
+def select_article(similar_articles, original_art_stats):
+    keywords = original_art_stats.content[:5]
+    orig_sentiments = original_art_stats.sentiment[:5]
+    recommendations_prep = []
+    corr_coefs = []
+    for art in similar_articles:
+        text = art.get('text')
+        df = process_annotations(get_annotations(text))
+        sentiments = []
+        for kw in keywords:
+            sentiment = df.loc[df.content == kw].sentiment.values
+            if sentiment:
+                sentiments.append(sentiment[0])  # There will be at most one sentiment
+            else:
+                sentiments.append(0)
+        corr_coefs.append(np.corrcoef(orig_sentiments, sentiments)[0, 1])
+    i = np.argmin(corr_coefs)
+    return similar_articles[i]
+
+
 def get_annotations(text):
     # print(type(text))
     """Run a sentiment analysis request on text."""
@@ -72,14 +93,7 @@ def analyze_text(request):
         annotations = get_annotations(request_json['text'])
         result = process_annotations(annotations)
         similar_articles = find_related_articles(result)
-
-        recommendations_prep = []
-        for art in similar_articles:
-            text = art.get('text')
-            # print(text)
-            if text:
-                temp_result = get_annotations(text)
-                recommendations_prep.append(process_annotations(temp_result))
+        recommendation = select_article(similar_articles, result)
 
         
         # print(len(recommendations_prep))
