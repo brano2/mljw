@@ -8,6 +8,7 @@
         </tr>
         <tr v-for="item in results" :key="item.id">
             <td>{{ item.content }}</td>
+            <td>{{ item.salience }}</td>
             <td>{{ item.sentiment }}</td>
             <td>{{ item.magnitude }}</td>
         </tr>
@@ -33,6 +34,7 @@ export default {
                     this.results.push({
                         id: key,
                         content: parsed.content[key],
+                        salience: parsed.salience[key],
                         sentiment: parsed.sentiment[key],
                         magnitude: parsed.magnitude[key]
                     })

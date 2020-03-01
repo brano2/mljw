@@ -7,16 +7,18 @@ from google.cloud.language import types
 
 def process_annotations(annotations):
     content = []
+    salience = []
     sentiment = []
     magnitude = []
 
     for entity in annotations.entities:
         content.append(entity.name)
+        salience.append(entity.salience)
         sentiment.append(entity.sentiment.score)
         magnitude.append(entity.sentiment.magnitude)
 
-    df = pd.DataFrame({"content": content, "sentiment": sentiment, "magnitude": magnitude})
-    df = df.sort_values(['magnitude'], ascending=False)
+    df = pd.DataFrame({"content": content, "salience": salience, "sentiment": sentiment, "magnitude": magnitude})
+    df = df.iloc[0:20].sort_values(['magnitude'], ascending=False)
 
     return df.to_json()
 
