@@ -73,8 +73,14 @@ def select_article(similar_articles, original_art_stats):
                 sentiments.append(0)
         corr_coefs.append(np.corrcoef(orig_sentiments, sentiments)[0, 1])
         art_stats.append((df, sentiments, corr_coefs[-1]))
+
     i = np.argmin(corr_coefs)
-    return similar_articles[i], art_stats
+    orig_sentiments = np.array(orig_sentiments)
+    sentiments = np.array(art_stats[i][1])
+    max_diff_idx = np.argmax(np.abs(orig_sentiments - sentiments))
+    return similar_articles[i], {'keyword': keywords[max_diff_idx],
+                                 'orig_sentiment': orig_sentiments[max_diff_idx],
+                                 'recommendation_sentiment': sentiments[max_diff_idx]}
 
 
 def get_annotations(text):
@@ -96,11 +102,11 @@ def analyze_text(request):
         annotations = get_annotations(request_json['text'])
         result = process_annotations(annotations)
         similar_articles = find_related_articles(result)
-        recommendation, art_stats = select_article(similar_articles, result)
+        recommendation, stats = select_article(similar_articles, result)
 
         
         # print(len(recommendations_prep))
         # for each similar articles get result from Google NLP API and recommend article (use get_annotations on similar_articles[N].content)
-        return jsonify([recommendation])
+        return jsonify([stats, recommendation])
     else:
         return 'error'
