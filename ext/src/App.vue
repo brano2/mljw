@@ -30,7 +30,7 @@ export default {
                 const parsed = JSON.parse(data)
 
                 Object.keys(parsed.content).forEach(key => {
-                    if (this.results.length > 5) return;
+                    // if (this.results.length > 5) return;
                     this.results.push({
                         id: key,
                         content: parsed.content[key],
@@ -39,6 +39,10 @@ export default {
                         magnitude: parsed.magnitude[key]
                     })
                 })
+
+                this.results.sort(function(a, b) {
+                    return b.magnitude - a.magnitude;
+                });
 
                 console.log(this.results)
             })

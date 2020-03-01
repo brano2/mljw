@@ -39,19 +39,9 @@ const allowed_sites = [
         content_selector: '.pf-content > p'
     },
     {
-        name: '',
-        article_selector: '',
-        content_selector: ''
-    },
-    {
-        name: '',
-        article_selector: '',
-        content_selector: ''
-    },
-    {
-        name: '',
-        article_selector: '',
-        content_selector: ''
+        name: 'brexitcentral.com',
+        article_selector: '.single-post',
+        content_selector: '.single-post article > p'
     }
 ]
 
@@ -79,7 +69,7 @@ function check_site(url) {
 const url = window.location.hostname
 const text = check_site(url)
 if (text !== "") {
-    console.log('site allowed')
+    console.log('site allowed', text)
     const check = $select('#kek')
     if (check.length > 0) {
         check.forEeach(el => {
