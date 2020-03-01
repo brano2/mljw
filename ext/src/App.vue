@@ -128,7 +128,7 @@ export default {
         this.addStyle(style)
         // console.log(this.$textData)
         this.loading = true;
-        axios.post('http://127.0.0.1:5000/analyze_text', { text: this.$textData })
+        axios.post('https://us-central1-htb-2020-269718.cloudfunctions.net/function-1', { text: this.$textData })
             .then(({ data }) => {
                 // const parsed = JSON.parse(data)
                 console.log('data', data)
