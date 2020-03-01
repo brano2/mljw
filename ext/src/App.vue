@@ -9,6 +9,9 @@
     </div>
     <div class="htb-body-wrapper">
         <div class="htb-body-inner-wrapper">
+            <div>
+                <p class="small" style="font-size: 12px; margin-bottom: 10px;">{{ getText }}</p>
+            </div>
             <div class="htb-article" v-for="item in results" :key="item.uuid">
                 <a :href="item.url" target="_blank">
                     <img :src="item.thread.main_image">
@@ -25,6 +28,7 @@ export default {
     data() {
         return {
             results: [],
+            stats: [],
             open: false,
             loading: false
         }
@@ -39,6 +43,17 @@ export default {
         openModal() {
             if (this.loading) return
             this.open = !this.open
+        }
+    },
+    computed: {
+        getText() {
+            if (this.stats.length == 0) return ''
+
+            if (this.stats[0].orig_sentiment < this.stats[0].recommendation_sentiment) {
+                return `Here is an article which likes ${this.stats[0].keyword} better:`
+            } else {
+                return `Here is an article which doesn't like ${this.stats[0].keyword} as much:`
+            }
         }
     },
     mounted() {
@@ -97,6 +112,7 @@ export default {
 
         #htb-reco .htb-body-wrapper .htb-body-inner-wrapper img {
             border-radius: 5px;
+            width: 100%;
         }
 
         #htb-reco .htb-body-wrapper .htb-body-inner-wrapper p {
@@ -112,7 +128,7 @@ export default {
         this.addStyle(style)
         // console.log(this.$textData)
         this.loading = true;
-        axios.post('https://us-central1-htb-2020-269718.cloudfunctions.net/function-1 ', { text: this.$textData })
+        axios.post('http://127.0.0.1:5000/analyze_text', { text: this.$textData })
             .then(({ data }) => {
                 // const parsed = JSON.parse(data)
                 console.log('data', data)
@@ -132,10 +148,8 @@ export default {
                 // });
 
                 // console.log(this.results)
-
-                data.forEach(element => {
-                    this.results.push(element)
-                });
+                this.stats.push(data[0])
+                this.results.push(data[1])
                 this.loading = false
                 this.open = true
             })
