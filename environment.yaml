@@ -12,6 +12,6 @@ dependencies:
   - seaborn
   - tqdm
   - pip:
-    - google-cloud-language
     - Flask
-
+    - google-cloud-language
+    - newsapi-python
