@@ -6,6 +6,8 @@ from google.cloud.language import enums
 from google.cloud.language import types
 from newsapi import NewsApiClient
 import pandas as pd
+import webhoseio
+webhoseio.config(token="7399617f-00ac-48ec-9e6a-deb0d8912c65")
 
 
 def process_annotations(annotations):
@@ -33,15 +35,26 @@ def find_related_articles(df):
     n_keywords = 5
     articles = []
     while len(articles) < 10:
-        query = _build_query(df.content[:n_keywords])
-        search_results = newsapi.get_everything(q=query, language='en', sort_by='relevancy')
-        articles.extend(search_results['articles'])
+        query = _build_query(df.content[:n_keywords]) + " language:english"
+        query_params = {
+            "q": query,
+            "ts": "1580463415153",
+            "sort": "relevancy"
+        }
+        search_results = webhoseio.query("filterWebContent", query_params)
+        # search_results = newsapi.get_everything(q=query, language='en', sort_by='relevancy')
+        print(len(search_results['posts']))
+        for article in search_results['posts']:
+            if len(articles) < 10:
+                articles.append(article)
+
         n_keywords -= 1
 
     return articles
 
 
 def get_annotations(text):
+    # print(type(text))
     """Run a sentiment analysis request on text."""
     client = language.LanguageServiceClient()
 
@@ -59,6 +72,17 @@ def analyze_text(request):
         annotations = get_annotations(request_json['text'])
         result = process_annotations(annotations)
         similar_articles = find_related_articles(result)
+
+        recommendations_prep = []
+        for art in similar_articles:
+            text = art.get('text')
+            # print(text)
+            if text:
+                temp_result = get_annotations(text)
+                recommendations_prep.append(process_annotations(temp_result))
+
+        
+        # print(len(recommendations_prep))
         # for each similar articles get result from Google NLP API and recommend article (use get_annotations on similar_articles[N].content)
 
         return jsonify(result.to_json())
