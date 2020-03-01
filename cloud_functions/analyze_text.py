@@ -38,6 +38,8 @@ def find_related_articles(df):
         articles.extend(search_results['articles'])
         n_keywords -= 1
 
+    return articles
+
 
 def get_annotations(text):
     """Run a sentiment analysis request on text."""
@@ -56,6 +58,9 @@ def analyze_text(request):
     if request_json and 'text' in request_json:
         annotations = get_annotations(request_json['text'])
         result = process_annotations(annotations)
+        similar_articles = find_related_articles(result)
+        # for each similar articles get result from Google NLP API and recommend article (use get_annotations on similar_articles[N].content)
+
         return jsonify(result.to_json())
     else:
         return 'error'
