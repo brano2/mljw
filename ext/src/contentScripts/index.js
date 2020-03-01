@@ -1,6 +1,22 @@
 import './index.styl'
 import Vue from 'vue'
 import App from "../App.vue"
+import ElementUI from 'element-ui';
+
+
+function addCss(fileName) {
+
+    var head = document.head;
+    var link = document.createElement("link");
+  
+    link.type = "text/css";
+    link.rel = "stylesheet";
+    link.href = fileName;
+  
+    head.appendChild(link);
+  }
+  
+addCss('https://unpkg.com/element-ui/lib/theme-chalk/index.css');
 
 const allowed_sites = [
     {
@@ -82,6 +98,7 @@ if (text !== "") {
     document.body.appendChild(elem);
 
     Vue.prototype.$textData = text
+    Vue.use(ElementUI);
 
     var app = new Vue({
         render: h => h(App)
