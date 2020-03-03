@@ -38,7 +38,7 @@ def find_related_articles(df):
     n_keywords = 5
     articles = []
     while len(articles) < 10:
-        query = _build_query(df.content[:n_keywords]) + " language:english"
+        query = _build_query(df.content.iloc[:n_keywords]) + " language:english"
         query_params = {
             "q": query,
             "ts": "1580463415153",
@@ -57,8 +57,8 @@ def find_related_articles(df):
 
 
 def select_article(similar_articles, original_art_stats):
-    keywords = original_art_stats.content[:5]
-    orig_sentiments = original_art_stats.sentiment[:5]
+    keywords = original_art_stats.content.iloc[:5]
+    orig_sentiments = original_art_stats.sentiment.iloc[:5]
     corr_coefs = []
     art_stats = []
     for art in similar_articles:
@@ -78,7 +78,7 @@ def select_article(similar_articles, original_art_stats):
     orig_sentiments = np.array(orig_sentiments)
     sentiments = np.array(art_stats[i][1])
     max_diff_idx = np.argmax(np.abs(orig_sentiments - sentiments))
-    return similar_articles[i], {'keyword': keywords[max_diff_idx],
+    return similar_articles[i], {'keyword': keywords.iloc[max_diff_idx],
                                  'orig_sentiment': orig_sentiments[max_diff_idx].item(),
                                  'recommendation_sentiment': sentiments[max_diff_idx].item()}
 
@@ -90,6 +90,7 @@ def get_annotations(text):
 
     document = types.Document(
         content=text,
+        language='en',
         type=enums.Document.Type.PLAIN_TEXT)
     annotations = client.analyze_entity_sentiment(document=document)
 
